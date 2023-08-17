@@ -2,8 +2,16 @@ import React, { useState } from "react";
 import { AiOutlineEye, AiOutlineEyeInvisible } from "react-icons/ai";
 import image from '../../Assets/Images/Brandlogo.png'
 import { Link } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
+import { server } from "../../server"
+import axios from "axios";
+import { toast } from "react-toastify";
+
+
 
 const Login = () => {
+
+  const navigate = useNavigate();
   const [email, setEmail] = useState(""); // email input
 
   const [password, setPassword] = useState(""); // password input
@@ -15,6 +23,31 @@ const Login = () => {
   const focushandler = () => {
     setisFocused(true);
   };
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+  
+    try {
+      const response = await axios.post(`${server}/user/login-user`, { email, password }, { withCredentials: true }).then((res)=>{
+      toast.success("Login Successfull")        
+      })
+      const data = response.data;
+  
+      toast.success("Login Successful");
+      toast.success("Welcome to E-Shop");
+  
+      // Assuming navigate is a function that redirects to a specific route
+      navigate("/");
+  
+      console.log(data);
+    
+    } catch (error) {
+      toast.error(error.response?.data?.message || "An error occurred during login");
+      console.log(error);
+      navigate("/");
+    }
+  };
+
 
   return (
     <div className="min-h-screen bg-gray-50  flex flex-col justify-center py-12 sm:px-6 lg:px-8">
@@ -32,7 +65,7 @@ const Login = () => {
       </div>
       <div className="mt-8 sm:mx-auto sm:w-full sm:max-w-md">
         <div className="bg-white py-8 px-4 shadow sm:rounded-lg sm:px-10">
-          <form className="space-y-6">
+          <form className="space-y-6" onSubmit={handleSubmit}>
             <div>
               <label
                 className="block text-sm font-medium text--700 mb-[-15px]"
